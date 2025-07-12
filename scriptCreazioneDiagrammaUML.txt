@@ -1,0 +1,200 @@
+/**CREAZIONE DELLA TABELLA TIPO_OPERAZIONE */
+TABLE tipo_operazione {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  DESCRIZIONE VARCHAR(200) [not null, note: 'Descrizione dell operazione']
+  indexes {
+    (DESCRIZIONE)
+  }
+}
+
+/**CREAZIONE DELLA TABELLA CITTA */
+TABLE citta {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  DESCRIZIONE VARCHAR(200) [not null, note: 'Descrizione della citta']
+  indexes {
+    (DESCRIZIONE)
+  }
+}
+
+/**CREAZIONE DELLA TABELLA STAZIONI */
+TABLE stazioni {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  DESCRIZIONE VARCHAR(200) [not null, note: 'Descrizione della stazione']
+  ID_CITTA integer [primary key, not null, note: 'Chiave di riferimento della tabella città']
+  indexes {
+    (ID_CITTA)
+    (DESCRIZIONE)
+    (ID_CITTA, DESCRIZIONE)
+  }
+}
+
+Ref: citta.KID < stazioni.ID_CITTA
+
+/**CREAZIONE DELLA TABELLA TRENI */
+TABLE treni {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  MODELLO VARCHAR(200) [not null, note: 'Modello della treno']
+  NUMERO_POSTI integer [primary key, not null, note: 'Numero di posti diposibili sul treno'] 
+  ANNO_FABBRICAZIONE integer [primary key, not null, note: 'Anno di fabbricazione del treno'] 
+  indexes {
+    (MODELLO)
+    (NUMERO_POSTI)
+    (ANNO_FABBRICAZIONE)
+  }
+}
+
+/**CREAZIONE DELLA TABELLA TRATTE */
+TABLE tratte {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  ID_STAZIONE_DA integer [primary key, not null, note: 'Chiave di riferimento della tabella stazioni, indica la stazione di partenza']
+  ID_STAZIONE_A integer [primary key, not null, note: 'Chiave di riferimento della tabella stazioni, indica la stazione di arrivo']
+  DISTANZA_KM integer [primary key, not null, note: 'Distanza tra la stazione di partenza e quella di arrivo']
+  DURATA_PREVISTA_MIN integer [primary key, not null, note: 'Durata prevista per la tratta']
+  indexes {
+    (ID_STAZIONE_DA)
+    (ID_STAZIONE_A)
+    (ID_STAZIONE_DA, ID_STAZIONE_A)
+    (DISTANZA_KM)
+    (DURATA_PREVISTA_MIN)
+  }
+}
+
+Ref: stazioni.KID < tratte.ID_STAZIONE_DA
+Ref: stazioni.KID < tratte.ID_STAZIONE_A
+
+/**CREAZIONE DELLA TABELLA PERCORSI */
+TABLE percorsi {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  DESCRIZIONE VARCHAR(200) [not null, note: 'Descrizione del percorso']
+  indexes {
+    (DESCRIZIONE)
+  }
+}
+ 
+/**CREAZIONE DELLA TABELLA PERCORSO_TRATTE */
+TABLE percorso_tratte {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  ID_PERCORSO integer [not null, note: 'Chiave di riferimento della tabella percorsi']
+  ID_TRATTA integer [not null, note: 'Chiave di riferimento della tabella tratte']
+  ORDINE integer [not null, note: 'Ordine della tratta del percorso']
+  indexes {
+    (ID_PERCORSO)
+    (ID_TRATTA)
+    (ID_PERCORSO, ORDINE)
+  }
+}
+
+Ref: percorsi.KID < percorso_tratte.ID_PERCORSO
+Ref: tratte.KID < percorso_tratte.ID_TRATTA
+
+/**CREAZIONE DELLA TABELLA PASSEGGERI */
+TABLE passeggeri {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  NOME VARCHAR(200) [not null, note: 'Nome del passeggero']
+  COGNOME VARCHAR(200) [not null, note: 'Cagnome del passeggero']
+  CODICE_FISCALE VARCHAR(16) [not null, note: 'Codice fiscale del passeggero']
+  DATA_NASCITA VARCHAR(14) [not null, note: 'Data di nascita del passeggero']
+  EMAIL VARCHAR(200) [not null, note: 'Email del passeggero']
+  indexes {
+    (EMAIL)
+    (NOME, COGNOME)
+    (DATA_NASCITA)
+  }
+}
+  
+/**CREAZIONE DELLA TABELLA TARIFFA */
+TABLE tariffa {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  DESCRIZIONE VARCHAR(200) [not null, note: 'Descrizione della tariffa']
+  ETA_MAX integer [note: 'Età massima per accedere alla tariffa']
+  ETA_MIN integer [note: 'Età minima per accedere alla tariffa']
+  indexes {
+    (DESCRIZIONE)
+    (ETA_MAX)
+    (ETA_MIN)
+    (ETA_MIN, ETA_MAX)
+  }
+}
+  
+/**CREAZIONE DELLA TABELLA CLASSE */
+TABLE classe {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  DESCRIZIONE VARCHAR(200) [not null, note: 'Descrizione della classe']
+  indexes {
+    (DESCRIZIONE)
+  }
+}
+
+/**CREAZIONE DELLA TABELLA PERCORSO_TARIFFA_CLASSE */
+TABLE percorso_tariffa_classe {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  ID_PERCORSO integer [primary key, not null, note: 'Chiave di riferimento della tabella percorsi, indica il percorso del biglietto']
+  ID_TARIFFA integer [primary key, not null, note: 'Chiave di riferimento della tabella tariffe, indica la tariffa del biglietto']
+  ID_CLASSE integer [primary key, not null, note: 'Chiave di riferimento della tabella classe, indica la classe']
+  IMPORTO DECIMAL(10,2) [not null, note: 'Importo da pagare']
+  indexes {
+    (ID_PERCORSO)
+    (ID_TARIFFA)
+    (ID_CLASSE)
+    (IMPORTO)
+    (ID_PERCORSO, ID_CLASSE)
+  }
+}
+
+Ref: percorsi.KID < percorso_tariffa_classe.ID_PERCORSO
+Ref: tariffa.KID < percorso_tariffa_classe.ID_TARIFFA
+Ref: classe.KID < percorso_tariffa_classe.ID_CLASSE
+  
+/**CREAZIONE DELLA TABELLA BIGLIETTI */
+TABLE biglietti {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  ID_PASSEGGERO integer [primary key, not null, note: 'Chiave di riferimento della tabella passeggeri']
+  ID_TRENO integer [primary key, not null, note: 'Chiave di riferimento della tabella treni']
+  ID_PERCORSO_TARIFFA_CLASSE integer [primary key, not null, note: 'Chiave di riferimento della tabella percorso_tariffa_classe']
+  POSTO VARCHAR(3) [not null, note: 'Posto del biglietto']
+  DATA_BIGLIETTO VARCHAR(14) [not null, note: 'Data effettiva del biglietto']
+  DATA_ACQUISTO VARCHAR(14) [not null, note: 'Data acquisto del biglietto']
+  DATA_CANCELLAZIONE VARCHAR(14) [note:  'Data cancellazione del biglietto']
+  indexes {
+    (ID_PASSEGGERO)
+    (ID_TRENO)
+    (ID_PERCORSO_TARIFFA_CLASSE)
+    (DATA_BIGLIETTO)
+    (DATA_ACQUISTO)
+    (DATA_CANCELLAZIONE)
+    (POSTO)
+    (ID_TRENO, DATA_BIGLIETTO)
+    (ID_TRENO, POSTO)
+    (DATA_CANCELLAZIONE)
+  }
+}
+
+Ref: passeggeri.KID < biglietti.ID_PASSEGGERO
+Ref: treni.KID < biglietti.ID_TRENO
+Ref: percorso_tariffa_classe.KID < biglietti.ID_PERCORSO_TARIFFA_CLASSE
+  
+/**CREAZIONE DELLA TABELLA BIGLIETTI_JN */
+TABLE biglietti_jn {
+  KID integer [primary key, not null, note: 'Chiave primaria della tabella']
+  ID_BIGLIETTO_JN integer [primary key, not null, note: 'Chiave di riferimento della tabella biglietti']
+  ID_PASSEGGERO integer [primary key, not null, note: 'Chiave di riferimento della tabella passeggeri']
+  ID_TRENO integer [primary key, not null, note: 'Chiave di riferimento della tabella treni']
+  ID_PERCORSO_TARIFFA_CLASSE integer [primary key, not null, note: 'Chiave di riferimento della tabella percorso_tariffa_classe']
+  POSTO VARCHAR(3) [not null, note: 'Posto del biglietto']
+  DATA_BIGLIETTO VARCHAR(14) [not null, note: 'Data effettiva del biglietto']
+  DATA_OPERAZIONE VARCHAR(14) [not null, note: 'Data operazione']
+  ID_TIPO_OPERAZIONE integer [primary key, not null, note: 'Chiave di riferimento della tabella id_tipo_operazione']
+  indexes {
+    (ID_BIGLIETTO_JN)
+    (ID_PASSEGGERO)
+    (DATA_OPERAZIONE)
+    (ID_TIPO_OPERAZIONE)
+    (ID_TRENO, DATA_BIGLIETTO)
+    (ID_BIGLIETTO_JN, DATA_OPERAZIONE, ID_TIPO_OPERAZIONE)
+  }}
+
+Ref: biglietti.KID < biglietti_jn.ID_BIGLIETTO_JN
+Ref: passeggeri.KID < biglietti_jn.ID_PASSEGGERO
+Ref: treni.KID < biglietti_jn.ID_TRENO
+Ref: percorso_tariffa_classe.KID < biglietti_jn.ID_PERCORSO_TARIFFA_CLASSE
+Ref: tipo_operazione.KID < biglietti_jn.ID_TIPO_OPERAZIONE
